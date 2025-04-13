@@ -9,7 +9,7 @@ info:
     The HAI platform integrates with partner EMRs/systems to exchange patient records,
     medication information, and call summaries for various care workflows such as
     health risk assessments, pre-procedure prep, and chronic care management.
-  version: "1.0.0"
+  version: "0.5.0"
 servers:
   - url: https://api.sandbox.hippocraticai.com
     description: Sandbox
