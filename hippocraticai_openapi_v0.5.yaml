@@ -11,10 +11,10 @@ info:
     health risk assessments, pre-procedure prep, and chronic care management.
   version: "1.0.0"
 servers:
-  - url: https://api.hai.health
-    description: Production
-  - url: https://api.sandbox.hai.health
+  - url: https://api.sandbox.hippocraticai.com
     description: Sandbox
+  - url: https://api.hippocraticai.com
+    description: Production
 
 paths:
   /patients:
