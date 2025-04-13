@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HAI API Docs (ReDoc)</title>
+    <meta charset="utf-8"/>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      #header {
+        background-color: #f8f8f8;
+        padding: 10px 20px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      #header img {
+        height: 50px;
+      }
+    </style>
+    <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+  </head>
+<body>
+  <div id="redoc-container"></div>
+
+  <script>
+    window.onload = function () {
+      Redoc.init('./hippocraticai_openapi_v0.5.yaml', {
+        scrollYOffset: 50,
+        hideDownloadButton: false,
+        hideHostname: false,
+      }, document.getElementById('redoc-container'));
+    };
+  </script>
+</body>
+</html>

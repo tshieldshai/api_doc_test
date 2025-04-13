@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HAI API Docs</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #header {
+      background: #f8f8f8;
+      border-bottom: 1px solid #eaeaea;
+      padding: 10px 20px;
+    }
+    #header img {
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <img src="https://via.placeholder.com/200x50?text=HAI+Logo" alt="HAI Logo" />
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      SwaggerUIBundle({
+        url: "hippocraticai_openapi_v0.5.yaml",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout"
+      })
+    }
+  </script>
+</body>
+</html>

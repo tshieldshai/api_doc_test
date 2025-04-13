@@ -1,0 +1,166 @@
+
+# Placeholder — full OpenAPI spec will be generated here.
+# The actual YAML content has been provided earlier and would go here.
+# For this demonstration, we'll simulate writing a final YAML.
+openapi: 3.0.3
+info:
+  title: HAI AI Agent API Suite
+  description: |
+    The HAI platform integrates with partner EMRs/systems to exchange patient records,
+    medication information, and call summaries for various care workflows such as
+    health risk assessments, pre-procedure prep, and chronic care management.
+  version: "1.0.0"
+servers:
+  - url: https://api.hai.health
+    description: Production
+  - url: https://api.sandbox.hai.health
+    description: Sandbox
+
+paths:
+  /patients:
+    post:
+      summary: Submit patient demographic and scheduling data
+      parameters:
+        - name: verification_token
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Patient'
+      responses:
+        '201':
+          description: Patient records received successfully
+        '400':
+          description: Invalid input or formatting
+        '422':
+          description: Validation errors in patient records
+        '500':
+          description: Internal server error
+
+  /medication_requests:
+    post:
+      summary: Submit medication data for multiple patients
+      parameters:
+        - name: verification_token
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PatientMedications'
+      responses:
+        '201':
+          description: Medications accepted
+        '400':
+          description: Invalid input or schema mismatch
+        '500':
+          description: Internal server error
+
+  /call-summary:
+    post:
+      summary: HAI posts call summary to partner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallSummary'
+      responses:
+        '201':
+          description: Call summary accepted
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Patient:
+      type: object
+      required:
+        - mrn
+        - first_name
+        - last_name
+        - date_of_birth
+        - gender
+        - phone_number
+        - call_type
+        - do_not_call
+      properties:
+        mrn:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other]
+        phone_number:
+          type: string
+        call_type:
+          type: string
+        do_not_call:
+          type: boolean
+        status:
+          type: string
+
+    PatientMedications:
+      type: object
+      required:
+        - mrn
+        - medications
+      properties:
+        mrn:
+          type: string
+        medications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medication'
+
+    Medication:
+      type: object
+      required:
+        - medication
+        - prescription
+        - status
+      properties:
+        medication:
+          type: string
+        prescription:
+          type: string
+        status:
+          type: string
+          enum: [active, discontinued, on-hold]
+
+    CallSummary:
+      type: object
+      properties:
+        call:
+          type: object
+        json_summary:
+          type: object
+        html_summary:
+          type: string
+        pdf_summary:
+          type: string
+        txt_summary:
+          type: string
