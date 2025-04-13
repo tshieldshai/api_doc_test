@@ -1,20 +1,21 @@
-
-# Placeholder — full OpenAPI spec will be generated here.
-# The actual YAML content has been provided earlier and would go here.
-# For this demonstration, we'll simulate writing a final YAML.
 openapi: 3.0.3
 info:
-  title: HAI AI Agent API Suite
+  title: Hippocratic AI Agent API Suite
   description: |
-    The HAI platform integrates with partner EMRs/systems to exchange patient records,
-    medication information, and call summaries for various care workflows such as
-    health risk assessments, pre-procedure prep, and chronic care management.
+    The Hippocratic AI Agents are the first safety-focused generative AI healthcare agents
+    for patient-facing non-diagnostic clinical tasks. Our API is designed to allow partners
+    to take advantage of these agents in their own workflows.
+
+    Partners send us information about patients, members, and other contacts, and specify
+    the outreach they would like our agent to perform. The Hippocratic AI Agent performs the
+    the outreach, and returns a summary and any structured data to the partner.
   version: "0.5.0"
 servers:
-  - url: https://api.sandbox.hippocraticai.com
-    description: Sandbox
-  - url: https://api.hippocraticai.com
-    description: Production
+  - url: https://ext-ingestion-api.sandbox.hippocraticdev.com/ice/<partner>-listener
+    description: Sandbox - not HIPAA-compliant, no personal data or PHI allowed
+  - url: https://ext-ingestion-api.uat.hippocraticdev.com/ice/<partner>-listener
+    description: User acceptance testing (staging) - HIPAA-compliant
+
 
 paths:
   /patients:
@@ -104,24 +105,154 @@ components:
       properties:
         mrn:
           type: string
+          description: Medical record number (MRN)
+          example: "400215"
         first_name:
           type: string
+          description: First name of the patient
+          example: "Henry"
         last_name:
           type: string
+          description: Last name of the patient
+          example: "Williams"
         date_of_birth:
           type: string
           format: date
+          description: Patient's date of birth (YYYY-MM-DD)
+          example: "1983-06-04"
         gender:
           type: string
-          enum: [male, female, other]
+          enum:
+            - male
+            - female
+            - other
+          description: Patient's gender
+          example: "male"
         phone_number:
           type: string
-        call_type:
+          description: Patient's phone number (E.164 format recommended)
+          example: "+17733857025"
+        provider_name:
           type: string
+          description: Name of the primary care provider
+          example: "Dr John Doe"
         do_not_call:
           type: boolean
+          description: Indicates if the patient should not be contacted. Explicit true/false indicates that a patient should/should not be DNC'd. Null is a no-op (e.g., the state remains unchanged)
+          example: false
+          default: null
+        preferred_language:
+          type: string
+          description: Preferred language code (ISO 639-1)
+          example: "en"
+        timezone:
+          type: string
+          description: Patient's timezone (IANA format). Used to determine call times and operating hours.
+          example: "America/Chicago"
+        call_type:
+          type: string
+          description: Type of call for this patient
+          example: "10_day_pre_procedure"
+        address_line1:
+          type: string
+          description: Address line 1 (Street and number)
+          example: "123 S"
+        address_line2:
+          type: string
+          description: Address line 2 (Additional street details)
+          example: "Main St"
+        city:
+          type: string
+          description: City of residence
+          example: "Las Vegas"
+        state:
+          type: string
+          description: State code (US State Abbreviations)
+          example: "NV"
+        country:
+          type: string
+          description: Country of residence
+          example: "USA"
+        postalCode:
+          type: string
+          description: Postal or ZIP code
+          example: "89101"
+        procedure_code:
+          type: string
+          description: CPT code representing the upcoming procedure
+          example: "52232"
+        procedure_date:
+          type: string
+          format: date-time
+          description: Date and time of the procedure
+          example: "2024-01-01T17:00"
+        procedure_type:
+          type: string
+          description: Description of the procedure
+          example: "Arterial Catheter"
+        procedure_site:
+          type: string
+          description: Site where the procedure was or will be performed
+          example: "Left Leg"
+        discharge_date:
+          type: string
+          format: date-time
+          description: Date of patient discharge (if applicable)
+          example: "2023-10-01T15:30:00"
+        upcoming_procedure_reason:
+          type: string
+          description: The reason for the procedure
+          example: "diagnostic"
+        upcoming_procedure_arrival_buffer:
+          type: string
+          description: The amount of time a patient should arrive prior to the procedure start time
+          example: "1 hour"
+        upcoming_procedure_arrival_location:
+          type: string
+          description: Where the patient should arrive for their procedure. This field can be generic (e.g. Family Medicine) or specific (e.g., third floor front desk of the east building in Campus Park)
+          example: "East Family Medicine front desk"
+        upcoming_procedure_prep:
+          type: string
+          description: The prep type or instructions a patient should follow prior to their procedure
+          example: "miralax"
+        upcoming_appointment_date:
+          type: string
+          format: date-time
+          description: Date and time of the upcoming appointment
+          example: "2024-01-01T17:00"
+        upcoming_appointment_type:
+          type: string
+          description: Type of appointment upcoming
+          example: "AWV"
+        upcoming_appointment_reason:
+          type: string
+          description: The reason for the appointment
+          example: "Cough"
+        upcoming_appointment_clinic_name:
+          type: string
+          description: Name of the clinic where the upcoming appointment will be held
+          example: "East Family Medicine"
+        upcoming_appointment_address:
+          type: string
+          description: Address of where the upcoming appointment will be held
+          example: "123 Hippocratic Way"
+        previous_appointment_date:
+          type: string
+          format: date-time
+          description: Date and time of the previous appointment
+          example: "2024-01-01T17:00"
+        previous_appointment_type:
+          type: string
+          description: Type of the previous appointment
+          example: "AWV"
+        previous_appointment_clinic_name:
+          type: string
+          description: Name of the clinic where the previous appointment was held
+          example: "East Family Medicine"
         status:
           type: string
+          description: Status of patient calls. ”active” (for patients who need to be called) and “canceled” (for patients whose name needs to be removed from calling list.
+
 
     PatientMedications:
       type: object
@@ -131,10 +262,13 @@ components:
       properties:
         mrn:
           type: string
+          description: Medical record number (MRN)
+          example: "12345"
         medications:
           type: array
+          description: List of medications for the patient
           items:
-            $ref: '#/components/schemas/Medication'
+            $ref: "#/components/schemas/Medication"
 
     Medication:
       type: object
@@ -145,22 +279,33 @@ components:
       properties:
         medication:
           type: string
+          description: Name of the medication
+          example: "Plavix"
         prescription:
           type: string
+          description: Dosage and frequency
+          example: "75 mg once a day"
         status:
           type: string
           enum: [active, discontinued, on-hold]
+          description: Status of the medication
+          example: "active"
 
     CallSummary:
       type: object
+      required:
+        - call
       properties:
         call:
           type: object
         json_summary:
           type: object
-        html_summary:
-          type: string
         pdf_summary:
           type: string
+          description: PDF summary in base64-encoded form
+        html_summary:
+          type: string
+          description: HTML summary string
         txt_summary:
           type: string
+          description: Plaintext summary
